@@ -1,7 +1,7 @@
 # PDF Quiz Generator — Backend API
 
 A production-ready Flask backend that ingests PDFs, extracts content,
-generates quiz questions with Claude, stores everything in PostgreSQL,
+generates quiz questions with Google Gemini AI, stores everything in PostgreSQL,
 and serves an adaptive quiz API.
 
 ---
@@ -9,8 +9,8 @@ and serves an adaptive quiz API.
 ## Architecture
 
 ```
-PDF Upload → pdfplumber extraction → LLM metadata inference (grade/subject/topic)
-          → text chunking → Claude generates questions (MCQ, True/False, Fill-in-the-blank)
+PDF Upload → pdfplumber extraction → Gemini AI metadata inference (grade/subject/topic)
+          → text chunking → Gemini generates questions (MCQ, True/False, Fill-in-the-blank)
           → duplicate detection → quality validation → PostgreSQL
           → Flask API serves adaptive quiz sessions
           → Rolling-window difficulty engine adjusts per answer
@@ -22,8 +22,12 @@ PDF Upload → pdfplumber extraction → LLM metadata inference (grade/subject/t
 
 ```bash
 cd pdf_quiz_app
+
+# Copy env template and add your free Gemini API key
+# Get one free at: https://aistudio.google.com (no credit card needed)
 cp .env.example .env
-# Edit .env → set ANTHROPIC_API_KEY=sk-ant-...
+# Edit .env → set GEMINI_API_KEY=AIzaSy...
+
 docker compose up --build
 curl http://localhost:5000/health
 ```
@@ -34,8 +38,15 @@ curl http://localhost:5000/health
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 createdb quizdb
-export ANTHROPIC_API_KEY=sk-ant-...
+
+# Windows PowerShell:
+$env:GEMINI_API_KEY="AIzaSy..."
+$env:DATABASE_URL="postgresql://localhost/quizdb"
+
+# Mac/Linux:
+export GEMINI_API_KEY=AIzaSy...
 export DATABASE_URL=postgresql://localhost/quizdb
+
 python app.py
 ```
 
@@ -82,7 +93,7 @@ python app.py
 /api/quiz?topic=shapes&difficulty=easy
 /api/quiz?type=fill_in_the_blank&difficulty=medium&limit=5
 ```
-Difficulty accepts: `easy` / `medium` / `hard` or `1`–`5`.
+Difficulty accepts: `easy` / `medium` / `hard` or `1`-`5`.
 
 **POST /api/quiz/{session_id}/answer**:
 ```json
@@ -121,12 +132,29 @@ Fill-in-the-blank: pass the word/phrase directly.
 
 ---
 
+## LLM Provider
+
+This project uses **Google Gemini AI** (`gemini-1.5-flash`) via the free tier.
+
+- Get a free API key at: https://aistudio.google.com
+- No credit card required
+- Generous free limits — more than enough for this project
+
+Gemini is used for:
+- Generating quiz questions from text chunks
+- Inferring grade/subject/topic metadata from PDF content
+- Grading fill-in-the-blank answers
+- Detecting semantically duplicate questions
+- Scoring question quality before saving
+
+---
+
 ## Duplicate Detection
 
 Two-stage pipeline runs automatically on every generated question:
 
 1. **Fast string similarity** — normalised ratio >= 0.92 = instant reject (no API call)
-2. **LLM semantic check** — ratio 0.70-0.92 triggers Claude to verify if they ask the same thing
+2. **Gemini semantic check** — ratio 0.70-0.92 triggers Gemini to verify if they ask the same thing
 
 Post-ingestion scan:
 ```bash
@@ -137,7 +165,7 @@ curl -X POST http://localhost:5000/api/admin/documents/{id}/check-duplicates
 
 ## Question Quality Validation
 
-Each question is scored 0.0-1.0 by Claude before saving:
+Each question is scored 0.0-1.0 by Gemini before saving:
 
 | Score | Result |
 |---|---|
@@ -158,7 +186,7 @@ Rolling window over last 5 answers:
 | 50-79% | Hold |
 | <= 50% | Difficulty -1 |
 
-Selection order: exact match → ±1 → ±2 → any. Prefers least-shown questions.
+Selection order: exact match → +/-1 → +/-2 → any. Prefers least-shown questions.
 
 ---
 
@@ -166,7 +194,7 @@ Selection order: exact match → ±1 → ±2 → any. Prefers least-shown questi
 
 | Variable | Required | Description |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | YES | Claude API key |
+| `GEMINI_API_KEY` | YES | Free Gemini API key from aistudio.google.com |
 | `DATABASE_URL` | YES | PostgreSQL connection string |
 | `FLASK_ENV` | no | `development` or `production` |
 | `FLASK_DEBUG` | no | `1` for debug mode |
@@ -185,8 +213,8 @@ See `sample_outputs/` for:
 
 ## Running Tests
 
-```bash
-# Put any PDF in the folder as sample.pdf, then:
+```powershell
+# Windows — put any PDF in the folder as sample.pdf, then:
 python test_api.py
 
 # Against a remote server:
