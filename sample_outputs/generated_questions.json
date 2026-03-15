@@ -1,0 +1,67 @@
+[
+  {
+    "id": "q1a2b3c4-d5e6-7890-abcd-ef1234567890",
+    "question_text": "How many sides does a triangle have?",
+    "question_type": "mcq",
+    "options": ["A. 2", "B. 3", "C. 4", "D. 5"],
+    "correct_answer": "B. 3",
+    "explanation": "A triangle is defined as a polygon with exactly three sides and three angles.",
+    "difficulty": 1,
+    "topic_tags": ["shapes", "triangle", "geometry"],
+    "source_chunk_id": "A1B2C3D4_CH_00",
+    "document_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+  },
+  {
+    "id": "q2b3c4d5-e6f7-8901-bcde-f12345678901",
+    "question_text": "A square has four equal sides.",
+    "question_type": "true_false",
+    "options": ["True", "False"],
+    "correct_answer": "True",
+    "explanation": "A square is a special rectangle where all four sides are the same length.",
+    "difficulty": 1,
+    "topic_tags": ["shapes", "square"],
+    "source_chunk_id": "A1B2C3D4_CH_00",
+    "document_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+  },
+  {
+    "id": "q3c4d5e6-f7a8-9012-cdef-123456789012",
+    "question_text": "A triangle has ___ sides.",
+    "question_type": "fill_in_the_blank",
+    "options": null,
+    "correct_answer": "three",
+    "explanation": "The word 'triangle' comes from Latin meaning three angles, and it has three sides.",
+    "difficulty": 2,
+    "topic_tags": ["shapes", "triangle"],
+    "source_chunk_id": "A1B2C3D4_CH_00",
+    "document_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+  },
+  {
+    "id": "q4d5e6f7-a8b9-0123-defa-234567890123",
+    "question_text": "Which of the following best describes photosynthesis?",
+    "question_type": "mcq",
+    "options": [
+      "A. The process by which animals breathe",
+      "B. The process by which plants make food using sunlight",
+      "C. The process by which water evaporates",
+      "D. The process by which soil absorbs water"
+    ],
+    "correct_answer": "B. The process by which plants make food using sunlight",
+    "explanation": "Photosynthesis is the process where plants use sunlight, water, and carbon dioxide to produce glucose and oxygen.",
+    "difficulty": 2,
+    "topic_tags": ["plants", "photosynthesis", "science"],
+    "source_chunk_id": "C3D4E5F6_CH_00",
+    "document_id": "c3d4e5f6-a7b8-9012-cdef-123456789012"
+  },
+  {
+    "id": "q5e6f7a8-b9c0-1234-efab-345678901234",
+    "question_text": "Plants produce their own food through a process called ___.",
+    "question_type": "fill_in_the_blank",
+    "options": null,
+    "correct_answer": "photosynthesis",
+    "explanation": "Photosynthesis is the process by which plants convert sunlight, water, and carbon dioxide into glucose.",
+    "difficulty": 2,
+    "topic_tags": ["plants", "photosynthesis"],
+    "source_chunk_id": "C3D4E5F6_CH_00",
+    "document_id": "c3d4e5f6-a7b8-9012-cdef-123456789012"
+  }
+]
