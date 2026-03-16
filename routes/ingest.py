@@ -228,7 +228,7 @@ def _generate_questions_only(app, doc_id, chunk_objs, questions_per_chunk,
         total_rejected = 0
 
         for chunk_obj in chunk_objs:
-            if len(chunk_obj.text.split()) < 50:
+            if len(chunk_obj.text.split()) < 10:
                 continue
             try:
                 raw_questions = generate_questions_for_chunk(

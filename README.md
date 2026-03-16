@@ -1,7 +1,7 @@
 # PDF Quiz Generator — Backend API
 
 A production-ready Flask backend that ingests PDFs, extracts content,
-generates quiz questions with Google Gemini AI, stores everything in PostgreSQL,
+generates quiz questions with Groq AI (LLaMA 3.3), stores everything in PostgreSQL,
 and serves an adaptive quiz API.
 
 ---
@@ -9,8 +9,8 @@ and serves an adaptive quiz API.
 ## Architecture
 
 ```
-PDF Upload → pdfplumber extraction → Gemini AI metadata inference (grade/subject/topic)
-          → text chunking → Gemini generates questions (MCQ, True/False, Fill-in-the-blank)
+PDF Upload → pdfplumber extraction → Groq AI metadata inference (grade/subject/topic)
+          → text chunking → Groq generates questions (MCQ, True/False, Fill-in-the-blank)
           → duplicate detection → quality validation → PostgreSQL
           → Flask API serves adaptive quiz sessions
           → Rolling-window difficulty engine adjusts per answer
@@ -23,10 +23,10 @@ PDF Upload → pdfplumber extraction → Gemini AI metadata inference (grade/sub
 ```bash
 cd pdf_quiz_app
 
-# Copy env template and add your free Gemini API key
-# Get one free at: https://aistudio.google.com (no credit card needed)
+# Copy env template and add your free Groq API key
+# Get one free at: https://console.groq.com (no credit card needed)
 cp .env.example .env
-# Edit .env → set GEMINI_API_KEY=AIzaSy...
+# Edit .env → set GROQ_API_KEY=gsk_...
 
 docker compose up --build
 curl http://localhost:5000/health
@@ -40,11 +40,11 @@ pip install -r requirements.txt
 createdb quizdb
 
 # Windows PowerShell:
-$env:GEMINI_API_KEY="AIzaSy..."
+$env:GROQ_API_KEY="gsk_..."
 $env:DATABASE_URL="postgresql://localhost/quizdb"
 
 # Mac/Linux:
-export GEMINI_API_KEY=AIzaSy...
+export GROQ_API_KEY=gsk_...
 export DATABASE_URL=postgresql://localhost/quizdb
 
 python app.py
@@ -134,13 +134,14 @@ Fill-in-the-blank: pass the word/phrase directly.
 
 ## LLM Provider
 
-This project uses **Google Gemini AI** (`gemini-1.5-flash`) via the free tier.
+This project uses **Groq AI** with the `llama-3.3-70b-versatile` model via the free tier.
 
-- Get a free API key at: https://aistudio.google.com
+- Get a free API key at: https://console.groq.com
 - No credit card required
-- Generous free limits — more than enough for this project
+- No daily limits on the free tier
+- Very fast inference
 
-Gemini is used for:
+Groq AI is used for:
 - Generating quiz questions from text chunks
 - Inferring grade/subject/topic metadata from PDF content
 - Grading fill-in-the-blank answers
@@ -154,7 +155,7 @@ Gemini is used for:
 Two-stage pipeline runs automatically on every generated question:
 
 1. **Fast string similarity** — normalised ratio >= 0.92 = instant reject (no API call)
-2. **Gemini semantic check** — ratio 0.70-0.92 triggers Gemini to verify if they ask the same thing
+2. **Groq semantic check** — ratio 0.70-0.92 triggers Groq to verify if they ask the same thing
 
 Post-ingestion scan:
 ```bash
@@ -165,7 +166,7 @@ curl -X POST http://localhost:5000/api/admin/documents/{id}/check-duplicates
 
 ## Question Quality Validation
 
-Each question is scored 0.0-1.0 by Gemini before saving:
+Each question is scored 0.0-1.0 by Groq before saving:
 
 | Score | Result |
 |---|---|
@@ -186,7 +187,7 @@ Rolling window over last 5 answers:
 | 50-79% | Hold |
 | <= 50% | Difficulty -1 |
 
-Selection order: exact match → +/-1 → +/-2 → any. Prefers least-shown questions.
+Selection order: exact match -> +/-1 -> +/-2 -> any. Prefers least-shown questions.
 
 ---
 
@@ -194,7 +195,7 @@ Selection order: exact match → +/-1 → +/-2 → any. Prefers least-shown ques
 
 | Variable | Required | Description |
 |---|---|---|
-| `GEMINI_API_KEY` | YES | Free Gemini API key from aistudio.google.com |
+| `GROQ_API_KEY` | YES | Free Groq API key from console.groq.com |
 | `DATABASE_URL` | YES | PostgreSQL connection string |
 | `FLASK_ENV` | no | `development` or `production` |
 | `FLASK_DEBUG` | no | `1` for debug mode |

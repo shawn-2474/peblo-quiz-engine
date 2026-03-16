@@ -10,8 +10,8 @@ import pdfplumber
 
 # ── Constants ──────────────────────────────────────────────────────────────────
 
-CHUNK_TARGET_TOKENS  = 400   # target chunk size (rough token estimate)
-CHUNK_OVERLAP_TOKENS = 60    # overlap between adjacent chunks
+CHUNK_TARGET_TOKENS  = 100   # target chunk size (rough token estimate)
+CHUNK_OVERLAP_TOKENS = 20    # overlap between adjacent chunks
 WORDS_PER_TOKEN      = 0.75  # rough approximation
 
 
