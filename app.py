@@ -15,13 +15,15 @@ def create_app():
     CORS(app)
 
     # ── Configuration ──────────────────────────────────────────────
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-        "DATABASE_URL",
-        "postgresql://quizuser:quizpass@localhost:5432/quizdb"
-    )
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["UPLOAD_FOLDER"] = "/tmp/uploads"
-    app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB
+    DATABASE_URL = os.getenv("DATABASE_URL")
+
+    if DATABASE_URL:
+     app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+    else:
+       app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///local.db"
+       app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+       app.config["UPLOAD_FOLDER"] = "/tmp/uploads"
+       app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB
 
     try:
      os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)

@@ -195,7 +195,7 @@ def submit_answer(session_id: str):
     if question.question_type == "fill_in_the_blank":
         # Flexible text match — normalise whitespace and case
         is_correct = (
-            user_answer.strip().lower() == question.correct_answer.strip().lower()
+            answer.strip().lower() == question.correct_answer.strip().lower()
         )
         # Fallback: LLM grading for longer fill-in answers
         if not is_correct and len(question.correct_answer.split()) > 2:
