@@ -17,18 +17,20 @@ def create_app():
     # ── Configuration ──────────────────────────────────────────────
     DATABASE_URL = os.getenv("DATABASE_URL")
 
-    if DATABASE_URL:
-     app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
-    else:
-       app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///local.db"
-       app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-       app.config["UPLOAD_FOLDER"] = "/tmp/uploads"
-       app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB
+    # Fix for Render postgres URL format
+    if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
+    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["UPLOAD_FOLDER"] = "/tmp/uploads"
+    app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB
+
+    # Create upload folder
     try:
-     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+        os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
     except FileExistsError:
-     pass
+        pass
 
     # ── Database ───────────────────────────────────────────────────
     db.init_app(app)
@@ -49,4 +51,4 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000)
