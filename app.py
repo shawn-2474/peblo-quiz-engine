@@ -44,11 +44,21 @@ def create_app():
     app.register_blueprint(quiz_bp,    url_prefix="/api")
     app.register_blueprint(admin_bp,   url_prefix="/api/admin")
 
+    @app.route("/")
+    def home():
+        return {
+        "message": "PDF Quiz Generator API is live 🚀",
+        "endpoints": {
+            "health": "/health",
+            "ingest": "/api/ingest",
+            "quiz": "/api/quiz"
+        }
+    }
+
     @app.route("/health")
     def health():
         return {"status": "ok", "service": "pdf-quiz-api"}
-
-    return app
+        return app
 
 
 if __name__ == "__main__":
