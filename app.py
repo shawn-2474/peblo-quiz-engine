@@ -35,8 +35,10 @@ def create_app():
     # ── Database ───────────────────────────────────────────────────
     db.init_app(app)
     with app.app_context():
-        init_db()
-
+        try:
+            init_db()
+        except Exception as e:
+            print("DB init failed:", e)
     # ── Blueprints ─────────────────────────────────────────────────
     app.register_blueprint(ingest_bp,  url_prefix="/api")
     app.register_blueprint(quiz_bp,    url_prefix="/api")
