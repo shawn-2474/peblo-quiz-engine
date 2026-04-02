@@ -58,7 +58,7 @@ def create_app():
     @app.route("/health")
     def health():
         return {"status": "ok", "service": "pdf-quiz-api"}
-        return app
+    return app
 
 
 if __name__ == "__main__":
